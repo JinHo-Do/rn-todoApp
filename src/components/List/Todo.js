@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import DeleteButton from './DeleteButton';
 
 class Todo extends Component {
   shouldComponentUpdate(nextProps) {
-    const { title, complete } = this.props;
-    return title !== nextProps.title || complete !== nextProps.complete;
+    const { title, complete, backgroundColor } = this.props;
+    return (
+      title !== nextProps.title ||
+      complete !== nextProps.complete ||
+      backgroundColor !== nextProps.backgroundColor
+    );
   }
 
   render() {
@@ -17,9 +22,7 @@ class Todo extends Component {
           {title}
         </Text>
         <View style={styles.btnContainer}>
-          <TouchableOpacity style={styles.btn} onPress={() => handleDelete(id)}>
-            <Text style={styles.btnText}>삭제</Text>
-          </TouchableOpacity>
+          <DeleteButton id={id} handleDelete={handleDelete} />
         </View>
       </View>
     );
@@ -49,16 +52,6 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     flex: 1
-  },
-  btn: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'tomato',
-    margin: 10
-  },
-  btnText: {
-    color: 'white'
   }
 });
 

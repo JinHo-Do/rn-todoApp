@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingHorizontal: 10
   },
   flilterText: {
     color: 'black'
