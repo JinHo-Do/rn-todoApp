@@ -13,10 +13,10 @@ class Todo extends Component {
   }
 
   render() {
-    const { id, title, complete, backgroundColor, handleComplete, handleDelete } = this.props;
+    const { id, title, complete, handleComplete, handleDelete } = this.props;
 
     return (
-      <View style={backgroundColor ? [styles.container, styles.backgroundColor] : styles.container}>
+      <View style={styles.container}>
         <Text style={styles.checkMark}>{complete ? 'V' : null}</Text>
         <Text style={styles.title} onPress={() => handleComplete(id)}>
           {title}
@@ -37,9 +37,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 50,
     backgroundColor: '#FFFFFF'
-  },
-  backgroundColor: {
-    backgroundColor: '#DDDDDD'
   },
   checkMark: {
     width: '10%',

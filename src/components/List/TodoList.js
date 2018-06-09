@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
 import Todo from './Todo';
 
 const TodoList = ({ todos, handleComplete, handleDelete, filter }) => {
@@ -13,21 +13,26 @@ const TodoList = ({ todos, handleComplete, handleDelete, filter }) => {
     filteredList = todos.filter(todo => !todo.complete);
   }
 
-  const todoList = filteredList.map((todo, i) => (
+  const Separator = () => <View style={styles.separator} />;
+
+  const renderItem = ({ item }) => (
     <Todo
-      key={i}
-      id={todo.id}
-      title={todo.title}
-      complete={todo.complete}
-      backgroundColor={i % 2 === 1}
+      id={item.id}
+      title={item.title}
+      complete={item.complete}
       handleComplete={handleComplete}
       handleDelete={handleDelete}
     />
-  ));
+  );
 
   return (
     <View style={styles.container}>
-      <ScrollView>{todoList}</ScrollView>
+      <FlatList
+        data={filteredList}
+        keyExtractor={item => item.id}
+        renderItem={renderItem}
+        ItemSeparatorComponent={Separator}
+      />
     </View>
   );
 };
@@ -36,6 +41,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column'
+  },
+  separator: {
+    height: 1,
+    backgroundColor: 'lightgray'
   }
 });
 

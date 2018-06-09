@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
+import uuid from 'uuid';
 import { TodoInputWrapper } from '../components/Input';
 import { TodoList } from '../components/List';
 
@@ -8,17 +9,17 @@ class TodosContainer extends Component {
     text: '',
     todos: [
       {
-        id: 1,
+        id: uuid(),
         title: '투두 앱 만들기',
         complete: true
       },
       {
-        id: 2,
+        id: uuid(),
         title: '스타일 시트 스니펫 찾기',
         complete: false
       },
       {
-        id: 3,
+        id: uuid(),
         title: '플렉스 박스 연구',
         complete: true
       }
@@ -28,8 +29,6 @@ class TodosContainer extends Component {
       complete: false
     }
   };
-
-  flag = 4;
 
   handleChange = e => {
     this.setState({
@@ -69,15 +68,13 @@ class TodosContainer extends Component {
         todos: [
           ...this.state.todos,
           {
-            id: this.flag,
+            id: uuid(),
             title: this.state.text,
             complete: false
           }
         ],
         text: ''
       });
-
-      this.flag++;
     }
   };
 
