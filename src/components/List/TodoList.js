@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet, Text } from 'react-native';
 import Todo from './Todo';
 
 const TodoList = ({ todos, handleComplete, handleDelete, filter }) => {
@@ -25,7 +25,7 @@ const TodoList = ({ todos, handleComplete, handleDelete, filter }) => {
     />
   );
 
-  return (
+  return filteredList.length ? (
     <View style={styles.container}>
       <FlatList
         data={filteredList}
@@ -33,6 +33,10 @@ const TodoList = ({ todos, handleComplete, handleDelete, filter }) => {
         renderItem={renderItem}
         ItemSeparatorComponent={Separator}
       />
+    </View>
+  ) : (
+    <View style={styles.emptyList}>
+      <Text>Empty List</Text>
     </View>
   );
 };
@@ -45,6 +49,11 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: 'lightgray'
+  },
+  emptyList: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 });
 
