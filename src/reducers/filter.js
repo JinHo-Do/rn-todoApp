@@ -13,7 +13,6 @@ const filter = (state = initialState, action) => {
         complete: false
       };
     case actions.TODO_FILTER_COMPLETE:
-      console.log('complete');
       return {
         all: false,
         complete: true

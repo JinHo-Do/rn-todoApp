@@ -13,18 +13,9 @@ class TodosContainer extends Component {
     text: ''
   };
 
-  // async componentDidMount() {
-  //   try {
-  //     const keys = await AsyncStorage.getAllKeys();
-  //     const getTodoList = await AsyncStorage.multiGet(keys);
-  //     const previousTodoList = getTodoList.map(item => JSON.parse(item[1]));
-  //     const { TodoActions } = this.props;
-
-  //     TodoActions.todoInit(previousTodoList);
-  //   } catch (error) {
-  //     console.warn(error);
-  //   }
-  // }
+  componentDidMount() {
+    this.props.TodoActions.todoInit();
+  }
 
   handleChange = e => {
     this.setState({
@@ -35,40 +26,11 @@ class TodosContainer extends Component {
   handleComplete = id => {
     const { TodoActions } = this.props;
     TodoActions.todoComplete(id);
-    // try {
-    //   const { todos } = this.props;
-    //   const targetIndex = todos.findIndex(v => v.id === id);
-    //   const updatedTodo = {
-    //     id: todos[targetIndex].id,
-    //     title: todos[targetIndex].title,
-    //     complete: !todos[targetIndex].complete
-    //   };
-
-    //   await AsyncStorage.mergeItem(id, JSON.stringify(updatedTodo));
-
-    //   this.setState({
-    //     todos: [...todos.slice(0, targetIndex), updatedTodo, ...todos.slice(targetIndex + 1)]
-    //   });
-    // } catch (error) {
-    //   console.warn(error);
-    // }
   };
 
   handleDelete = id => {
     const { TodoActions } = this.props;
     TodoActions.todoDelete(id);
-    // try {
-    //   const { todos } = this.props;
-    //   const targetIndex = todos.findIndex(v => v.id === id);
-
-    //   await AsyncStorage.removeItem(id);
-
-    //   this.setState({
-    //     todos: [...todos.slice(0, targetIndex), ...todos.slice(targetIndex + 1)]
-    //   });
-    // } catch (error) {
-    //   console.warn(error);
-    // }
   };
 
   handleSubmit = () => {
@@ -84,23 +46,6 @@ class TodosContainer extends Component {
       this.setState({
         text: ''
       });
-      // try {
-      //   const id = uuid();
-      //   const todo = {
-      //     id,
-      //     title: this.state.text,
-      //     complete: false
-      //   };
-
-      //   await AsyncStorage.setItem(id, JSON.stringify(todo));
-
-      //   this.setState({
-      //     todos: [...this.state.todos, todo],
-      //     text: ''
-      //   });
-      // } catch (e) {
-      //   console.warn(e);
-      // }
     }
   };
 
@@ -121,7 +66,6 @@ class TodosContainer extends Component {
 
   render() {
     const { todos, filter } = this.props;
-    console.log('todos: ', todos, filter);
     const { text } = this.state;
     const {
       handleChange,

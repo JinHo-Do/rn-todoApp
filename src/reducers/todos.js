@@ -1,4 +1,5 @@
 import * as actions from '../actions/actionTypes';
+import { AsyncStorage } from 'react-native';
 
 const initialState = {
   list: []
@@ -6,7 +7,7 @@ const initialState = {
 
 const todo = (state = initialState, action) => {
   const { list } = state;
-  let targetIndex;
+  let targetIndex, updateTodo, newItem;
 
   switch (action.type) {
     case actions.TODO_INIT:
@@ -14,30 +15,33 @@ const todo = (state = initialState, action) => {
         list: action.todos
       };
     case actions.TODO_SUBMIT:
+      newItem = {
+        id: action.id,
+        title: action.text,
+        complete: false
+      };
+
+      AsyncStorage.setItem(action.id, JSON.stringify(newItem));
+
       return {
-        list: [
-          ...list,
-          {
-            id: action.id,
-            title: action.text,
-            complete: false
-          }
-        ]
+        list: [...list, newItem]
       };
     case actions.TODO_COMPLETE:
       targetIndex = list.findIndex(v => v.id === action.id);
 
+      updateTodo = {
+        ...list[targetIndex],
+        complete: !list[targetIndex].complete
+      };
+
+      AsyncStorage.mergeItem(action.id, JSON.stringify(updateTodo));
+
       return {
-        list: [
-          ...list.slice(0, targetIndex),
-          {
-            ...list[targetIndex],
-            complete: !list[targetIndex].complete
-          },
-          ...list.slice(targetIndex + 1)
-        ]
+        list: [...list.slice(0, targetIndex), updateTodo, ...list.slice(targetIndex + 1)]
       };
     case actions.TODO_DELETE:
+      AsyncStorage.removeItem(action.id);
+
       targetIndex = list.findIndex(v => v.id === action.id);
 
       return {

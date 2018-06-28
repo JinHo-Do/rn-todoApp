@@ -5,7 +5,6 @@ import FilterButton from './FilterButton';
 class Filter extends Component {
   shouldComponentUpdate(nextProps) {
     const { filter } = this.props;
-    console.log('filter: ', filter);
     return filter.all !== nextProps.filter.all || filter.complete !== nextProps.filter.complete;
   }
 
