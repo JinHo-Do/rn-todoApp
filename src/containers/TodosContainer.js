@@ -1,32 +1,30 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, AsyncStorage } from 'react-native';
 import uuid from 'uuid';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as todoActions from '../actions';
+
 import { TodoInputWrapper } from '../components/Input';
 import { TodoList } from '../components/List';
 
 class TodosContainer extends Component {
   state = {
-    text: '',
-    todos: [],
-    filter: {
-      all: true,
-      complete: false
-    }
+    text: ''
   };
 
-  async componentDidMount() {
-    try {
-      const keys = await AsyncStorage.getAllKeys();
-      const getTodoList = await AsyncStorage.multiGet(keys);
-      const previousTodoList = getTodoList.map(item => JSON.parse(item[1]));
+  // async componentDidMount() {
+  //   try {
+  //     const keys = await AsyncStorage.getAllKeys();
+  //     const getTodoList = await AsyncStorage.multiGet(keys);
+  //     const previousTodoList = getTodoList.map(item => JSON.parse(item[1]));
+  //     const { TodoActions } = this.props;
 
-      this.setState({
-        todos: previousTodoList
-      });
-    } catch (error) {
-      console.warn(error);
-    }
-  }
+  //     TodoActions.todoInit(previousTodoList);
+  //   } catch (error) {
+  //     console.warn(error);
+  //   }
+  // }
 
   handleChange = e => {
     this.setState({
@@ -34,92 +32,97 @@ class TodosContainer extends Component {
     });
   };
 
-  handleComplete = async id => {
-    try {
-      const { todos } = this.state;
-      const targetIndex = todos.findIndex(v => v.id === id);
-      const updatedTodo = {
-        id: todos[targetIndex].id,
-        title: todos[targetIndex].title,
-        complete: !todos[targetIndex].complete
-      };
+  handleComplete = id => {
+    const { TodoActions } = this.props;
+    TodoActions.todoComplete(id);
+    // try {
+    //   const { todos } = this.props;
+    //   const targetIndex = todos.findIndex(v => v.id === id);
+    //   const updatedTodo = {
+    //     id: todos[targetIndex].id,
+    //     title: todos[targetIndex].title,
+    //     complete: !todos[targetIndex].complete
+    //   };
 
-      await AsyncStorage.mergeItem(id, JSON.stringify(updatedTodo));
+    //   await AsyncStorage.mergeItem(id, JSON.stringify(updatedTodo));
 
-      this.setState({
-        todos: [...todos.slice(0, targetIndex), updatedTodo, ...todos.slice(targetIndex + 1)]
-      });
-    } catch (error) {
-      console.warn(error);
-    }
+    //   this.setState({
+    //     todos: [...todos.slice(0, targetIndex), updatedTodo, ...todos.slice(targetIndex + 1)]
+    //   });
+    // } catch (error) {
+    //   console.warn(error);
+    // }
   };
 
-  handleDelete = async id => {
-    try {
-      const { todos } = this.state;
-      const targetIndex = todos.findIndex(v => v.id === id);
+  handleDelete = id => {
+    const { TodoActions } = this.props;
+    TodoActions.todoDelete(id);
+    // try {
+    //   const { todos } = this.props;
+    //   const targetIndex = todos.findIndex(v => v.id === id);
 
-      await AsyncStorage.removeItem(id);
+    //   await AsyncStorage.removeItem(id);
 
-      this.setState({
-        todos: [...todos.slice(0, targetIndex), ...todos.slice(targetIndex + 1)]
-      });
-    } catch (error) {
-      console.warn(error);
-    }
+    //   this.setState({
+    //     todos: [...todos.slice(0, targetIndex), ...todos.slice(targetIndex + 1)]
+    //   });
+    // } catch (error) {
+    //   console.warn(error);
+    // }
   };
 
-  handleSubmit = async () => {
-    if (this.state.text.length !== 0) {
-      try {
-        const id = uuid();
-        const todo = {
-          id,
-          title: this.state.text,
-          complete: false
-        };
+  handleSubmit = () => {
+    const { TodoActions } = this.props;
+    const { text } = this.state;
+    let id;
 
-        await AsyncStorage.setItem(id, JSON.stringify(todo));
+    if (text.length > 0) {
+      id = uuid();
 
-        this.setState({
-          todos: [...this.state.todos, todo],
-          text: ''
-        });
-      } catch (e) {
-        console.warn(e);
-      }
+      TodoActions.todoSubmit(id, text);
+
+      this.setState({
+        text: ''
+      });
+      // try {
+      //   const id = uuid();
+      //   const todo = {
+      //     id,
+      //     title: this.state.text,
+      //     complete: false
+      //   };
+
+      //   await AsyncStorage.setItem(id, JSON.stringify(todo));
+
+      //   this.setState({
+      //     todos: [...this.state.todos, todo],
+      //     text: ''
+      //   });
+      // } catch (e) {
+      //   console.warn(e);
+      // }
     }
   };
 
   handleFilterAll = () => {
-    this.setState({
-      filter: {
-        all: true,
-        complete: false
-      }
-    });
+    const { TodoActions } = this.props;
+    TodoActions.todoFilterAll();
   };
 
   handleFilterComplete = () => {
-    this.setState({
-      filter: {
-        all: false,
-        complete: true
-      }
-    });
+    const { TodoActions } = this.props;
+    TodoActions.todoFilterComplete();
   };
 
   handleFilterActive = () => {
-    this.setState({
-      filter: {
-        all: false,
-        complete: false
-      }
-    });
+    const { TodoActions } = this.props;
+    TodoActions.todoFilterActive();
   };
 
   render() {
-    const { todos, text, filter } = this.state;
+    const { todos, filter } = this.props;
+    console.log('todos: ', todos, filter);
+    const { text } = this.state;
     const {
       handleChange,
       handleSubmit,
@@ -158,4 +161,16 @@ const styles = StyleSheet.create({
   }
 });
 
-export default TodosContainer;
+const mapStateToProps = state => ({
+  todos: state.todos.list,
+  filter: state.filter
+});
+
+const mapDispatchToProps = dispatch => ({
+  TodoActions: bindActionCreators(todoActions, dispatch)
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TodosContainer);
