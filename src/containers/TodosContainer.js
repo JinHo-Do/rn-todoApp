@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, AsyncStorage } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import uuid from 'uuid';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
