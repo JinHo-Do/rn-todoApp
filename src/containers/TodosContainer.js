@@ -1,34 +1,21 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import uuid from 'uuid';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as todoActions from '../actions';
+
 import { TodoInputWrapper } from '../components/Input';
 import { TodoList } from '../components/List';
 
 class TodosContainer extends Component {
   state = {
-    text: '',
-    todos: [
-      {
-        id: uuid(),
-        title: '투두 앱 만들기',
-        complete: true
-      },
-      {
-        id: uuid(),
-        title: '스타일 시트 스니펫 찾기',
-        complete: false
-      },
-      {
-        id: uuid(),
-        title: '플렉스 박스 연구',
-        complete: true
-      }
-    ],
-    filter: {
-      all: true,
-      complete: false
-    }
+    text: ''
   };
+
+  componentDidMount() {
+    this.props.TodoActions.todoInit();
+  }
 
   handleChange = e => {
     this.setState({
@@ -37,76 +24,49 @@ class TodosContainer extends Component {
   };
 
   handleComplete = id => {
-    const { todos } = this.state;
-    const targetIndex = todos.findIndex(v => v.id === id);
-
-    this.setState({
-      todos: [
-        ...todos.slice(0, targetIndex),
-        {
-          id: todos[targetIndex].id,
-          title: todos[targetIndex].title,
-          complete: !todos[targetIndex].complete
-        },
-        ...todos.slice(targetIndex + 1)
-      ]
-    });
+    const { TodoActions } = this.props;
+    TodoActions.todoComplete(id);
   };
 
   handleDelete = id => {
-    const { todos } = this.state;
-    const targetIndex = todos.findIndex(v => v.id === id);
-
-    this.setState({
-      todos: [...todos.slice(0, targetIndex), ...todos.slice(targetIndex + 1)]
-    });
+    const { TodoActions } = this.props;
+    TodoActions.todoDelete(id);
   };
 
   handleSubmit = () => {
-    if (this.state.text.length !== 0) {
+    const { TodoActions } = this.props;
+    const { text } = this.state;
+    let id;
+
+    if (text.length > 0) {
+      id = uuid();
+
+      TodoActions.todoSubmit(id, text);
+
       this.setState({
-        todos: [
-          ...this.state.todos,
-          {
-            id: uuid(),
-            title: this.state.text,
-            complete: false
-          }
-        ],
         text: ''
       });
     }
   };
 
   handleFilterAll = () => {
-    this.setState({
-      filter: {
-        all: true,
-        complete: false
-      }
-    });
+    const { TodoActions } = this.props;
+    TodoActions.todoFilterAll();
   };
 
   handleFilterComplete = () => {
-    this.setState({
-      filter: {
-        all: false,
-        complete: true
-      }
-    });
+    const { TodoActions } = this.props;
+    TodoActions.todoFilterComplete();
   };
 
   handleFilterActive = () => {
-    this.setState({
-      filter: {
-        all: false,
-        complete: false
-      }
-    });
+    const { TodoActions } = this.props;
+    TodoActions.todoFilterActive();
   };
 
   render() {
-    const { todos, text, filter } = this.state;
+    const { todos, filter } = this.props;
+    const { text } = this.state;
     const {
       handleChange,
       handleSubmit,
@@ -145,4 +105,16 @@ const styles = StyleSheet.create({
   }
 });
 
-export default TodosContainer;
+const mapStateToProps = state => ({
+  todos: state.todos.list,
+  filter: state.filter
+});
+
+const mapDispatchToProps = dispatch => ({
+  TodoActions: bindActionCreators(todoActions, dispatch)
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TodosContainer);
